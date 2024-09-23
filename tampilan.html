@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelacakan Ijazah Berbasis Web</title>
+    <link rel="icon" href="nebo2.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Georgia', serif; 
+            padding: 20px;
+            background-color: #2d0ba5;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #fefefe;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .title-container img {
+            max-width: 150px;
+            margin-right: 20px;
+        }
+
+        .title-text h1, .title-text h3, .title-text h5 {
+            color: #fbfbfb;
+            margin: 0;
+        }
+
+        .description {
+            color: white;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .instruction {
+            color: white;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-top: 50px;
+        }
+
+        .instruction-error {
+            color: red;
+            font-family: 'Georgia', serif;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #2673dff1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Menambahkan gaya pada hasil pencarian */
+        #results {
+            margin-top: 20px;
+            margin-bottom: 100px;
+            color: #000000;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto; 
+            font-size: 14px;
+            font-family: Times New Roman;
+        }
+
+        /* Gaya untuk teks "Data yang kami temukan:" */
+        #data-title {
+            font-family: Times New Roman;
+            font-size: 17px;
+            color: white; 
+            text-align: center; 
+            margin-bottom: 20px;
+        }
+
+        /* Gaya untuk tabel hasil pencarian */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fefefe;
+            border-radius: 10px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <img src="nebo2.png" alt="logo">
+        <div class="title-text">
+            <h1><font size="8">PIB-W</font></h1>
+            <h3><font size="5">Pelacakan Ijazah Berbasis Web</font></h3>
+            <h5><font size="4">Sekolah Menengah Kejuruan Negeri 1 Bojong</font></h5>
+            <h5><font size="4">Jl. Raya Kec. Bojong Purwakarta</font></h5>
+        </div>
+    </div>
+
+    <div class="description">
+        <p>Untuk memastikan ketaatan Sekolah Menengah Kejuruan (SMK) Negeri 1 Bojong melaporkan data pembelajaran ke Operator SMK Negeri 1 Bojong. Apabila nomor Ijazah Saudara tidak ditemukan, silahkan menghubungkan Operator/Admin SMK Negeri 1 Bojong yang menerbitkan Ijazah. Pastikan anda mengisi NIS, NPSN, serta Jurusan.</p>
+        <p>Peraturan Sekretaris Jenderal Kementerian Pendidikan, Kebudayaan, Riset, Dan Teknologi Nomor 1 Tahun 2022 Tentang Spesifikasi Teknis Dan Bentuk, Serta Tata Cara Pengisian, Penggantian, Dan Pemusnahan Blangko Ijazah Pendidikan Dasar Dan Pendidikan Menengah Tahun Pelajaran 2021/2022</p>
+        <p>1.⁠ ⁠Pendidikan Menengah adalah jenjang pendidikan pada jalur pendidikan formal yang merupakan lanjutan pendidikan dasar, berbentuk Sekolah Menengah Atas, Madrasah Aliyah (MA), Sekolah Menengah Kejuruan, dan Madrasah Aliyah Kejuruan atau bentuk lain yang sederajat;</p>
+        <p>2.⁠ ⁠Bahwa ijazah diberikan kepada peserta didik sebagai pengakuan terhadap prestasi belajar dan/atau penyelesaian suatu jenjang pendidikan;</p>
+        <p>3.⁠ ⁠Peraturan Menteri Pendidikan dan Kebudayaan Nomor 14 Tahun 2017 tentang ljazah dan Sertifikat Hasil Ujian Nasional (Berita Negara Republik Indonesia Tahun 2017 Nomor 538).</p>
+    </div>
+
+    <!-- Instruksi di atas input -->
+    <div class="instruction">
+        Masukkan NIS Anda untuk melacak data ijazah Anda:
+    </div>
+    <div class="search-container">
+        <input id="search" type="text" placeholder="NIS">
+        <button onclick="searchData()">Cari</button>
+    </div>
+
+    <div id="results"></div> <!-- Div untuk menampilkan hasil pencarian -->
+
+    <script>
+        function searchData() {
+            const searchInput = document.getElementById('search').value;
+            const resultsDiv = document.getElementById('results');
+
+            // Sesuaikan URL dengan jalur file PHP backend
+            fetch(`search.php?NIS=${encodeURIComponent(searchInput)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        resultsDiv.innerHTML = `<p class="instruction-error">${data.message}</p>`;
+                    } else {
+                        resultsDiv.innerHTML = `
+                        <p id="data-title"><strong>Data ditemukan</strong></p>
+                        <table>
+                            <tr><td><strong>Nomor Induk Siswa</strong></td><td>${data.NIS}</td></tr>
+                            <tr><td><strong>Nama</strong></td><td>${data.NAMA}</td></tr>
+                            <tr><td><strong>Tempat Tanggal Lahir</strong></td><td>${data.TEMPAT_TANGGAL_LAHIR}</td></tr>
+                            <tr><td><strong>Jenis Kelamin</strong></td><td>${data.JENIS_KELAMIN}</td></tr>
+                            <tr><td><strong>Alamat</strong></td><td>${data.ALAMAT}</td></tr>
+                            <tr><td><strong>Kompetensi Keahlian</strong></td><td>${data.KOMPETENSI_KEAHLIAN}</td></tr>
+                            <tr><td><strong>Tanggal Lulus</strong></td><td>${data.TANGGAL_LULUS}</td></tr>
+                            <tr><td><strong>Nomor Ijazah</strong></td><td>${data.NO_IJAZAH}</td></tr>
+                        </table>`;
+                    }
+                })
+                .catch(error => {
+                    resultsDiv.innerHTML = `<p>Terjadi kesalahan: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
